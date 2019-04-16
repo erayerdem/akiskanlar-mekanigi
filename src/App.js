@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Chart from 'chart.js'
 import './App.css';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { isNull, isUndefined } from 'util';
 
 class App extends Component {
     state = {
@@ -18,75 +19,75 @@ class App extends Component {
         x: 0.0,
         y: 9.5
     },
-        {
-            x: 1.0,
-            y: 6.7
-        }, {
-            x: 2.30,
-            y: 4.10
-        }
+    {
+        x: 1.0,
+        y: 6.7
+    }, {
+        x: 2.30,
+        y: 4.10
+    }
         , {
-            x: 3.20,
-            y: 2.34
-        },
-        {
-            x: 4.0,
-            y: -0.20
-        }, {
-            x: 7.5,
-            y: -0.10
-        }, {
-            x: 15.0,
-            y: -0.40
-        },
-        {
-            x: 25.0,
-            y: -0.35
-        }, {
-            x: 35.0,
-            y: -0.20
-        }, {
-            x: 45.0,
-            y: -0.1
-        },
-        {
-            x: 55.0,
-            y: -0.05
-        }, {
-            x: 75.0,
-            y: 0.21
-        }, {
-            x: 80.0,
-            y: 0.11
-        },
-        {
-            x: 90.0,
-            y: 0.36
-        }, {
-            x: 95.0,
-            y: 0.67
-        }
+        x: 3.20,
+        y: 2.34
+    },
+    {
+        x: 4.0,
+        y: -0.20
+    }, {
+        x: 7.5,
+        y: -0.10
+    }, {
+        x: 15.0,
+        y: -0.40
+    },
+    {
+        x: 25.0,
+        y: -0.35
+    }, {
+        x: 35.0,
+        y: -0.20
+    }, {
+        x: 45.0,
+        y: -0.1
+    },
+    {
+        x: 55.0,
+        y: -0.05
+    }, {
+        x: 75.0,
+        y: 0.21
+    }, {
+        x: 80.0,
+        y: 0.11
+    },
+    {
+        x: 90.0,
+        y: 0.36
+    }, {
+        x: 95.0,
+        y: 0.67
+    }
         , {
-            x: 98.0,
-            y: 1.15
-        },
-        {
-            x: 100.0,
-            y: 2.0
-        }, {
-            x: 103.0,
-            y: 4.6
-        }, {
-            x: 105.0,
-            y: 5.82
-        },
-        {
-            x: 106.0,
-            y: 7.20
-        }, {
-            x: 108.0,
-            y: 9.60
-        }];
+        x: 98.0,
+        y: 1.15
+    },
+    {
+        x: 100.0,
+        y: 2.0
+    }, {
+        x: 103.0,
+        y: 4.6
+    }, {
+        x: 105.0,
+        y: 5.82
+    },
+    {
+        x: 106.0,
+        y: 7.20
+    }, {
+        x: 108.0,
+        y: 9.60
+    }];
     data2 = [{
         x: 0.0,
         y: 0.0
@@ -118,8 +119,8 @@ class App extends Component {
     ];
     data4copy;
 
-    drawchart = () => {
-        this.multiplybyfactor();
+    drawchart = (nextState) => {
+        this.multiplybyfactor(nextState);
         let myChart = new Chart(this.ctx, {
             plugins: [ChartDataLabels],
             type: 'scatter',
@@ -138,7 +139,7 @@ class App extends Component {
                     borderWidth: 3,
                     datalabels: {
                         formatter: function (value, context) {
-                            console.log(value.x);
+
                             return value.x + "," + value.y;
                         },
 
@@ -173,19 +174,37 @@ class App extends Component {
         this.ctx.canvas.parentNode.style.width = '1300px';
     };
 
-    multiplybyfactor = () => {
+    multiplybyfactor = (nextState) => {
+        let mystate;
 
+        if (isUndefined(nextState)) {
+
+            mystate = this.state;
+        }
+        else {
+
+            mystate = nextState;
+        }
         for (let i = 0; i < this.data1.length; i++) {
-            this.data1[i].x = parseFloat(this.data1copy[i].x * this.state.x).toFixed(3);
-            this.data1[i].y = parseFloat(this.data1copy[i].y * this.state.y).toFixed(3);
+
+
+            this.data1[i].x = parseFloat((this.data1copy[i].x * mystate.x).toFixed(3));
+            this.data1[i].y = parseFloat((this.data1copy[i].y * mystate.y).toFixed(3));
 
         }
+        console.log(this.state.x);
+
+        console.log(this.data1);
 
     };
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        this.drawchart();
-        return true;
+
+        console.log(nextState);
+        
+            this.drawchart(nextState);
+            return true;
+        
     }
 
     componentDidMount() {
@@ -197,13 +216,17 @@ class App extends Component {
     }
 
     handlechange = (name) => event => {
-
+       let b = parseFloat(event.target.value);
+       b.toFixed(3);
+       b=parseFloat(b);
+       
         this.setState({
-            [name]: [parseFloat(event.target.value)]
+            [name]: b
         });
+
         event.preventDefault();
 
-    }
+    };
 
     constructor(props) {
 
@@ -215,7 +238,6 @@ class App extends Component {
     }
 
     render() {
-
 
         return (
             <div className="App">
@@ -234,7 +256,7 @@ class App extends Component {
                 />
                 <TextField
                     id="standard-number"
-                    style={{fontSize: "26px"}}
+                    style={{ fontSize: "26px" }}
                     label="Y KATSAYISI"
                     value={this.state.y}
                     onChange={this.handlechange('y')}
@@ -244,10 +266,10 @@ class App extends Component {
                         shrink: true,
                     }}
                     margin="normal"
-                /><br/>
+                /><br />
                 <TextField
                     id="standard-number"
-                    style={{fontSize: "26px"}}
+                    style={{ fontSize: "26px" }}
                     label="Minimum"
                     value={this.state.minimum}
                     onChange={this.handlechange('minimum')}
@@ -260,7 +282,7 @@ class App extends Component {
                 />
                 <TextField
                     id="standard-number"
-                    style={{fontSize: "26px"}}
+                    style={{ fontSize: "26px" }}
                     label="Ortalama"
                     value={this.state.ortalama}
                     onChange={this.handlechange('ortalama')}
@@ -273,7 +295,7 @@ class App extends Component {
                 />
                 <TextField
                     id="standard-number"
-                    style={{fontSize: "26px"}}
+                    style={{ fontSize: "26px" }}
                     label="Maksimum"
                     value={this.state.maksimum}
                     onChange={this.handlechange('maksimum')}
@@ -287,7 +309,7 @@ class App extends Component {
                 <div className="myChartdiv">
                     <canvas id="myChart" width="1300px" height="700px"></canvas>
                 </div>
-                <br/>
+                <br />
 
             </div>
 
