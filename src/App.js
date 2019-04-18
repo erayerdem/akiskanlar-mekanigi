@@ -3,16 +3,17 @@ import TextField from '@material-ui/core/TextField';
 import Chart from 'chart.js'
 import './App.css';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { isNull, isUndefined } from 'util';
+import {  isUndefined } from 'util';
 
 class App extends Component {
     state = {
         x: 0.84,
         y: 0.88,
-        maksimum: 235.0,
-        ortalama: 185.0,
-        minimum: 130
+        maksimum: 2.350,
+        ortalama: 1.850,
+        minimum: 1.30
     };
+    datas;
     ctx;
     data1copy;
     data1 = [{
@@ -88,45 +89,44 @@ class App extends Component {
         x: 108.0,
         y: 9.60
     }];
-    data2 = [{
+    minimumchart = [{
         x: 0.0,
-        y: 0.0
+        y: this.state.minimum
     }, {
         x: 0.0,
-        y: 0.0
+        y: this.state.minimum
     }
 
     ];
-    data2copy;
-    data3 = [{
+    
+    averagechart = [{
         x: 0.0,
-        y: 0.0
+        y: this.state.ortalama
     }, {
         x: 0.0,
-        y: 0.0
+        y: this.state.ortalama
     }
 
     ];
-    data3copy;
-    data4 = [{
+    maximumchart = [{
         x: 0.0,
-        y: 0.0
+        y: this.state.maksimum
     }, {
         x: 0.0,
-        y: 0.0
+        y: this.state.maksimum
     }
 
     ];
-    data4copy;
-
+    kesitdegerleri;
     drawchart = (nextState) => {
         this.multiplybyfactor(nextState);
+        this.mrthales(nextState);
         let myChart = new Chart(this.ctx, {
             plugins: [ChartDataLabels],
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: 'BAĞLAMA ENKESİTİ',
+                    label: 'Bağlama Enkesiti',
                     data: this.data1,
                     showLine: true,
 
@@ -149,9 +149,76 @@ class App extends Component {
                         align: "top"
                     }
 
-                }],
+                }, {
+                    label: 'Minimum',
+                    data: this.minimumchart,
+                    showLine: true,
 
+                    pointStyle: 'circle',
+                    backgroundColor: "orange",
+                    fill: false,
+                    lineTension: 0,
+                    borderColor: 'orange',
+                    pointRadius: 5,
+                    borderWidth: 3,
+                    datalabels: {
+                        formatter: function (value, context) {
 
+                            return value.x + "," + value.y;
+                        },
+
+                        font: {
+                            size: 10
+                        },
+                        align: "top"
+                    }
+                },{
+                    label: 'Ortalama',
+                    data: this.averagechart,
+                    showLine: true,
+
+                    pointStyle: 'circle',
+                    backgroundColor: "#731963",
+                    fill: false,
+                    lineTension: 0,
+                    borderColor: '#731963',
+                    pointRadius: 5,
+                    borderWidth: 3,
+                    datalabels: {
+                        formatter: function (value, context) {
+
+                            return value.x + "," + value.y;
+                        },
+
+                        font: {
+                            size: 10
+                        },
+                        align: "top"
+                    }
+                },{
+                    label: 'Maksimum',
+                    data:this.maximumchart,
+                    showLine: true,
+
+                    pointStyle: 'circle',
+                    backgroundColor: "#72E1D1",
+                    fill: false,
+                    lineTension: 0,
+                    borderColor: '#72E1D1',
+                    pointRadius: 5,
+                    borderWidth: 3,
+                    datalabels: {
+                        formatter: function (value, context) {
+
+                            return value.x + "," + value.y;
+                        },
+
+                        font: {
+                            size: 10
+                        },
+                        align: "top"
+                    }
+                }]
             },
             options: {
                 scales: {
@@ -188,23 +255,24 @@ class App extends Component {
         for (let i = 0; i < this.data1.length; i++) {
 
 
-            this.data1[i].x = parseFloat((this.data1copy[i].x * mystate.x).toFixed(3));
-            this.data1[i].y = parseFloat((this.data1copy[i].y * mystate.y).toFixed(3));
+            this.data1[i].x = parseFloat((this.data1copy[i].x * mystate.x).toFixed(2));
+            this.data1[i].y = parseFloat((this.data1copy[i].y * mystate.y).toFixed(2));
 
         }
-        console.log(this.state.x);
 
-        console.log(this.data1);
 
     };
+    mrthales = (nextState) => {
+
+    }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
 
-        console.log(nextState);
         
-            this.drawchart(nextState);
-            return true;
-        
+
+        this.drawchart(nextState);
+        return true;
+
     }
 
     componentDidMount() {
@@ -216,10 +284,10 @@ class App extends Component {
     }
 
     handlechange = (name) => event => {
-       let b = parseFloat(event.target.value);
-       b.toFixed(3);
-       b=parseFloat(b);
-       
+        let b = parseFloat(event.target.value);
+        b.toFixed(3);
+        b = parseFloat(b);
+
         this.setState({
             [name]: b
         });
@@ -232,11 +300,15 @@ class App extends Component {
 
         super(props);
         this.data1copy = JSON.parse(JSON.stringify(this.data1));
-        this.data2copy = JSON.parse(JSON.stringify(this.data2));
-        this.data3copy = JSON.parse(JSON.stringify(this.data3));
-        this.data4copy = JSON.parse(JSON.stringify(this.data4));
+        this.datas = new Map();
+        this.datas.set(0, this.minimumchart);
+        this.datas.set(1, this.averagechart);
+        this.datas.set(2, this.maximumchart);
+        this.kesitdegerleri = [this.state.minimum, this.state.ortalama, this.statemaksimum];
     }
 
+    
+    
     render() {
 
         return (
