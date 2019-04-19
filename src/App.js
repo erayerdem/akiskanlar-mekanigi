@@ -3,7 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Chart from 'chart.js'
 import './App.css';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {  isUndefined } from 'util';
+import { isUndefined } from 'util';
 
 class App extends Component {
     state = {
@@ -89,34 +89,25 @@ class App extends Component {
         x: 108.0,
         y: 9.60
     }];
-    minimumchart = [{
+    charts = [[{
         x: 0.0,
         y: this.state.minimum
     }, {
         x: 0.0,
         y: this.state.minimum
-    }
-
-    ];
-    
-    averagechart = [{
+    }], [{
         x: 0.0,
         y: this.state.ortalama
     }, {
         x: 0.0,
         y: this.state.ortalama
-    }
-
-    ];
-    maximumchart = [{
+    }], [{
         x: 0.0,
         y: this.state.maksimum
     }, {
         x: 0.0,
         y: this.state.maksimum
-    }
-
-    ];
+    }]];
     kesitdegerleri;
     drawchart = (nextState) => {
         this.multiplybyfactor(nextState);
@@ -131,11 +122,11 @@ class App extends Component {
                     showLine: true,
 
                     pointStyle: 'circle',
-                    backgroundColor: "pink",
+                    backgroundColor: "red",
                     fill: false,
                     lineTension: 0,
-                    borderColor: 'pink',
-                    pointRadius: 5,
+                    borderColor: 'red',
+                    pointRadius: 3,
                     borderWidth: 3,
                     datalabels: {
                         formatter: function (value, context) {
@@ -150,8 +141,8 @@ class App extends Component {
                     }
 
                 }, {
-                    label: 'Minimum',
-                    data: this.minimumchart,
+                    label: 'Minimum Su Seviyesi',
+                    data: this.charts[0],
                     showLine: true,
 
                     pointStyle: 'circle',
@@ -159,7 +150,7 @@ class App extends Component {
                     fill: false,
                     lineTension: 0,
                     borderColor: 'orange',
-                    pointRadius: 5,
+                    pointRadius: 3,
                     borderWidth: 3,
                     datalabels: {
                         formatter: function (value, context) {
@@ -172,9 +163,9 @@ class App extends Component {
                         },
                         align: "top"
                     }
-                },{
+                }, {
                     label: 'Ortalama',
-                    data: this.averagechart,
+                    data: this.charts[1],
                     showLine: true,
 
                     pointStyle: 'circle',
@@ -182,7 +173,7 @@ class App extends Component {
                     fill: false,
                     lineTension: 0,
                     borderColor: '#731963',
-                    pointRadius: 5,
+                    pointRadius: 3,
                     borderWidth: 3,
                     datalabels: {
                         formatter: function (value, context) {
@@ -195,9 +186,9 @@ class App extends Component {
                         },
                         align: "top"
                     }
-                },{
+                }, {
                     label: 'Maksimum',
-                    data:this.maximumchart,
+                    data: this.charts[2],
                     showLine: true,
 
                     pointStyle: 'circle',
@@ -205,7 +196,7 @@ class App extends Component {
                     fill: false,
                     lineTension: 0,
                     borderColor: '#72E1D1',
-                    pointRadius: 5,
+                    pointRadius: 3,
                     borderWidth: 3,
                     datalabels: {
                         formatter: function (value, context) {
@@ -225,20 +216,44 @@ class App extends Component {
                     xAxes: [{
                         beginAtZero: true,
                         type: 'linear',
-                        position: 'bottom'
+                        position: 'bottom',
+                        scaleLabel : {
+                            display:true,
+                            labelString:"EŞEL SIFIR KOTU",
+                            fontSize:22,
+                            padding : {
+                                left:15,
+                                top:0
+                            }
+                        }
+                      
+                       
+                        
                     }],
-                    yAxes: {
+                    yAxes: [{
                         beginAtZero: true,
+                        type:'linear',
+                        position:'top',
+                        scaleLabel : {
+                            display:true,
+                            labelString:"Y",
+                            fontSize:22
+                        }
 
                     }
 
-                },
+                ],
                 backgroundColor: "red"
             },
-
-        });
-        this.ctx.canvas.parentNode.style.height = '700px';
-        this.ctx.canvas.parentNode.style.width = '1300px';
+                response:true,
+                legend : {
+                    labels: {
+                        fontColor:"black",
+                        fontSize:22
+                    }
+                }
+        }});
+        
     };
 
     multiplybyfactor = (nextState) => {
@@ -263,13 +278,60 @@ class App extends Component {
 
     };
     mrthales = (nextState) => {
-
+        console.log(nextState);
+        if(!isUndefined(nextState)) {
+        this.charts = [[{
+            
+            y: nextState.minimum
+        }, {
+       
+            y: nextState.minimum
+        }], [{
+            
+            y: nextState.ortalama
+        }, {
+           
+            y: nextState.ortalama
+        }], [{
+            
+            y: nextState.maksimum
+        }, {
+          
+            y: nextState.maksimum
+        }]];
+        this.kesitdegerleri = [nextState.minimum, nextState.ortalama, nextState.maksimum];
     }
+        for (let j = 0; j < 3; j++) {
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
+            for (let i = 0; i < this.data1.length; i++) {
+                if (this.kesitdegerleri[j] > this.data1[i].y) {
 
+                    let uzunykenari = this.data1[i - 1].y - this.data1[i].y;
+                    let kisay = this.data1[i - 1].y - this.kesitdegerleri[j];
+                    let altuzunkenar = this.data1[i].x - this.data1[i - 1].x;
+                    let cevap = (kisay * altuzunkenar) / uzunykenari;
+                    cevap = cevap + this.data1[i - 1].x;
+                    
+                    this.charts[j][0].x = parseFloat(cevap.toFixed(2));
+                    for (let z = i+1; z < this.data1.length; z++) {
+                        if (this.kesitdegerleri[j] < this.data1[z].y) {
+                            let uzunykenari1 = this.data1[z].y - this.data1[z-1].y;
+                            let kisay1 = this.data1[z].y - this.kesitdegerleri[j];
+                            let altuzunkenar1 = this.data1[z-1].x - this.data1[z].x;
+                            let cevap1 = (kisay1 * altuzunkenar1) / uzunykenari1;
+                            cevap1 = cevap1 + this.data1[z].x;
+                            console.log(cevap1);
+                            this.charts[j][1].x = parseFloat(cevap1.toFixed(2));
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
         
-
+    }
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
         this.drawchart(nextState);
         return true;
 
@@ -287,11 +349,10 @@ class App extends Component {
         let b = parseFloat(event.target.value);
         b.toFixed(3);
         b = parseFloat(b);
-
         this.setState({
             [name]: b
         });
-
+        
         event.preventDefault();
 
     };
@@ -304,11 +365,11 @@ class App extends Component {
         this.datas.set(0, this.minimumchart);
         this.datas.set(1, this.averagechart);
         this.datas.set(2, this.maximumchart);
-        this.kesitdegerleri = [this.state.minimum, this.state.ortalama, this.statemaksimum];
+        this.kesitdegerleri = [this.state.minimum, this.state.ortalama, this.state.maksimum];
     }
 
-    
-    
+
+
     render() {
 
         return (
@@ -382,7 +443,7 @@ class App extends Component {
                     <canvas id="myChart" width="1300px" height="700px"></canvas>
                 </div>
                 <br />
-
+            <h1>Minumum Islak Çevre=22m</h1>                
             </div>
 
         );
